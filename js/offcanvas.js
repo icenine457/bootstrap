@@ -34,7 +34,7 @@
     }
     
     if (this.options.autohide && !this.options.modal)
-      $(document).on('click', $.proxy(this.autohide, this))
+      $(document).on('click touchstart', $.proxy(this.autohide, this))
 
     if (this.options.toggle) this.toggle()
     
@@ -320,7 +320,8 @@
   }
   
   OffCanvas.prototype.autohide = function (e) {
-    if ($(e.target).closest(this.$element).length === 0) this.hide()
+    var target = $(e.target);
+    if (!target.hasClass('dropdown-backdrop') && $(e.target).closest(this.$element).length === 0) this.hide()
   }
 
   // OFFCANVAS PLUGIN DEFINITION
