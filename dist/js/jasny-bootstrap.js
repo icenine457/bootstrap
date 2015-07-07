@@ -1,6 +1,6 @@
 /*!
  * Jasny Bootstrap v3.1.3 (http://jasny.github.io/bootstrap)
- * Copyright 2012-2014 Arnold Daniels
+ * Copyright 2012-2015 Arnold Daniels
  * Licensed under Apache-2.0 (https://github.com/jasny/bootstrap/blob/master/LICENSE)
  */
 
@@ -40,7 +40,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Jasny Bootstrap\'s JavaScr
     return false // explicit for ie8 (  ._.)
   }
 
-  if ($.support.transition !== undefined) return  // Prevent conflict with Twitter Bootstrap
+  if ($.support.transition !== undefined) return  // Prevent conflict with vanilla Bootstrap
 
   // http://blog.alexmaccaw.com/css-transitions
   $.fn.emulateTransitionEnd = function (duration) {
@@ -92,8 +92,8 @@ if (typeof jQuery === 'undefined') { throw new Error('Jasny Bootstrap\'s JavaScr
       $(window).on('resize', $.proxy(this.recalc, this))
     }
     
-    if (this.options.autohide)
-      $(document).on('click', $.proxy(this.autohide, this))
+    if (this.options.autohide && !this.options.modal)
+      $(document).on('click touchstart', $.proxy(this.autohide, this))
 
     if (this.options.toggle) this.toggle()
     
@@ -198,7 +198,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Jasny Bootstrap\'s JavaScr
 
   OffCanvas.prototype.disableScrolling = function() {
     var bodyWidth = $('body').width()
-    var prop = 'padding-' + this.opposite(this.placement)
+    var prop = 'padding-right'
 
     if ($('body').data('offcanvas-style') === undefined) {
       $('body').data('offcanvas-style', $('body').attr('style') || '')
@@ -215,7 +215,8 @@ if (typeof jQuery === 'undefined') { throw new Error('Jasny Bootstrap\'s JavaScr
     }
     //disable scrolling on mobiles (they ignore overflow:hidden)
     $('body').on('touchmove.bs', function(e) {
-      e.preventDefault();
+      if (!$(event.target).closest('.offcanvas').length)
+        e.preventDefault();
     });
   }
 
@@ -326,6 +327,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Jasny Bootstrap\'s JavaScr
       if (doAnimate) this.$backdrop[0].offsetWidth // force reflow
 
       this.$backdrop.addClass('in')
+      this.$backdrop.on('click.bs', $.proxy(this.autohide, this))
 
       doAnimate ?
         this.$backdrop
@@ -377,7 +379,8 @@ if (typeof jQuery === 'undefined') { throw new Error('Jasny Bootstrap\'s JavaScr
   }
   
   OffCanvas.prototype.autohide = function (e) {
-    if ($(e.target).closest(this.$element).length === 0) this.hide()
+    var target = $(e.target);
+    if (!target.hasClass('dropdown-backdrop') && $(e.target).closest(this.$element).length === 0) this.hide()
   }
 
   // OFFCANVAS PLUGIN DEFINITION
